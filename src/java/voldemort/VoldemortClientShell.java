@@ -377,8 +377,12 @@ public class VoldemortClientShell {
         } else if(o instanceof List) {
             List<Object> l = (List<Object>) o;
             System.out.print("[");
-            for(Object obj: l)
-                printObject(obj);
+            Iterator<Object> iterator = l.iterator();
+            while(iterator.hasNext()) {
+                printObject(iterator.next());
+                if(iterator.hasNext())
+                    System.out.print(", ");
+            }
             System.out.print("]");
         } else if(o instanceof Map) {
             Map<String, Object> m = (Map<String, Object>) o;
@@ -421,10 +425,12 @@ public class VoldemortClientShell {
             return m;
         } else if(o instanceof Number) {
             Number n = (Number) o;
-            if(o instanceof Integer) {
-                if(n.intValue() < Byte.MAX_VALUE)
+            if(o instanceof Long) {
+                if(n.longValue() < Integer.MAX_VALUE)
+                    return n.intValue();
+                else if(n.longValue() < Byte.MAX_VALUE)
                     return n.byteValue();
-                else if(n.intValue() < Short.MAX_VALUE)
+                else if(n.longValue() < Short.MAX_VALUE)
                     return n.shortValue();
                 else
                     return n;
